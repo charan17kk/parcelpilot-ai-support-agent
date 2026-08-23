@@ -109,6 +109,7 @@ docker compose down
 - [Product note](docs/PRODUCT_NOTE.md)
 - [Demo video script](docs/DEMO_SCRIPT.md)
 - [AI tool usage](docs/AI_TOOL_USAGE.md)
+- [Free-tier deployment guide](docs/DEPLOYMENT.md)
 
 ## Security notes
 

@@ -1,0 +1,33 @@
+services:
+  - type: web
+    name: parcelpilot-ai-support-agent
+    runtime: docker
+    plan: free
+    region: singapore
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /api/v1/health
+    autoDeployTrigger: commit
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false
+      - key: OPENROUTER_API_KEY
+        sync: false
+      - key: SESSION_TOKEN_PEPPER
+        generateValue: true
+      - key: SESSION_COOKIE_SECURE
+        value: true
+      - key: FRONTEND_ORIGIN
+        value: https://parcelpilot-ai-support-agent.onrender.com
+      - key: OPENROUTER_MODEL
+        value: nvidia/nemotron-3-ultra-550b-a55b:free
+      - key: STATIC_FILES_DIR
+        value: /app/frontend
+      - key: AGENT_MAX_LLM_CALLS
+        value: 4
+      - key: AGENT_MAX_TOOL_STEPS
+        value: 6
+      - key: DEMO_USER_PASSWORD
+        value: ParcelPilotDemo!

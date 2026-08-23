@@ -1,0 +1,15 @@
+.git
+.gitignore
+.env
+**/.env
+**/.env.*
+!**/.env.example
+data/raw
+frontend/node_modules
+frontend/dist
+backend/.pytest_cache
+backend/.ruff_cache
+**/__pycache__
+**/*.pyc
+**/*.tsbuildinfo
+*.log

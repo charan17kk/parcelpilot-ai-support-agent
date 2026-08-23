@@ -1,6 +1,7 @@
 from functools import lru_cache
 from pathlib import Path
 from typing import Literal
+from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -18,6 +19,7 @@ class Settings(BaseSettings):
     app_host: str = "0.0.0.0"
     app_port: int = 8000
     frontend_origin: str = "http://localhost:5173"
+    static_files_dir: Path | None = None
 
     database_url: str = "postgresql+asyncpg://parcelpilot:parcelpilot_local@localhost:5432/parcelpilot"
 
@@ -49,6 +51,26 @@ class Settings(BaseSettings):
     rate_limit_login: str = "10/minute"
     rate_limit_chat: str = "20/minute"
     demo_user_password: str = "ParcelPilotDemo!"
+
+    @field_validator("database_url", mode="before")
+    @classmethod
+    def normalize_database_url(cls, value: str) -> str:
+        """Accept standard hosted Postgres URLs and adapt them for asyncpg."""
+        if not isinstance(value, str):
+            return value
+        normalized = value.strip()
+        if normalized.startswith("postgres://"):
+            normalized = normalized.replace("postgres://", "postgresql+asyncpg://", 1)
+        elif normalized.startswith("postgresql://"):
+            normalized = normalized.replace("postgresql://", "postgresql+asyncpg://", 1)
+
+        parts = urlsplit(normalized)
+        query = []
+        for key, item in parse_qsl(parts.query, keep_blank_values=True):
+            if key == "channel_binding":
+                continue
+            query.append(("ssl" if key == "sslmode" else key, item))
+        return urlunsplit((parts.scheme, parts.netloc, parts.path, urlencode(query), parts.fragment))
 
     @field_validator("session_token_pepper")
     @classmethod

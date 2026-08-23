@@ -9,6 +9,7 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
 
 from app.api.routes import actions, auth, chats, sources, system
 from app.config import get_settings
@@ -162,3 +163,9 @@ app.include_router(actions.router, prefix="/api/v1")
 app.include_router(sources.router, prefix="/api/v1")
 app.include_router(system.router, prefix="/api/v1")
 
+if settings.static_files_dir and settings.static_files_dir.is_dir():
+    app.mount(
+        "/",
+        StaticFiles(directory=settings.static_files_dir, html=True),
+        name="frontend",
+    )
