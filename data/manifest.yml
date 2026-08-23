@@ -1,0 +1,46 @@
+documents:
+  - filename: 01_Support_Policy_v3_CURRENT.pdf
+    title: ParcelPilot Support Policy v3
+    document_type: policy
+    version: "3"
+    status: current
+    authority_class: current_policy
+    effective_from: 2026-05-01
+  - filename: 02_Support_Policy_v2_DEPRECATED.pdf
+    title: ParcelPilot Support Policy v2
+    document_type: policy
+    version: "2"
+    status: deprecated
+    authority_class: deprecated_policy
+    effective_from: 2025-01-01
+    effective_to: 2026-04-30
+  - filename: 03_Cancellation_and_Service_Credit_SOP_v4.pdf
+    title: ParcelPilot Cancellation & Service Credit SOP v4
+    document_type: sop
+    version: "4"
+    status: current
+    authority_class: current_sop
+    effective_from: 2026-06-15
+  - filename: 04_Product_Operations_Guide_and_Known_Issues.pdf
+    title: ParcelPilot Product Operations Guide and Known Issues
+    document_type: product_guide
+    status: current
+    authority_class: product_guide
+    effective_from: 2026-08-14
+  - filename: 05_Northstar_Logistics_Enterprise_Agreement.pdf
+    title: Northstar Logistics Enterprise Agreement
+    document_type: agreement
+    status: current
+    authority_class: customer_agreement
+    account_external_id: ACCT-001
+    effective_from: 2026-01-01
+    effective_to: 2026-12-31
+  - filename: 06_LumenWorks_Service_Agreement.pdf
+    title: LumenWorks Service Agreement
+    document_type: agreement
+    status: current
+    authority_class: customer_agreement
+    account_external_id: ACCT-002
+    effective_from: 2026-03-01
+    effective_to: 2027-02-28
+
