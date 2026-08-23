@@ -4,9 +4,9 @@
 
 - Open the hosted app and let the free Render service wake up.
 - Keep the GitHub README open in a second tab for the architecture section.
-- Prepare a customer session as Northstar and an incognito/internal session as the operations manager.
-- Pre-run the two answer examples so the video is not dependent on provider latency.
-- Prepare the escalation immediately before recording and leave its confirmation card pending.
+- First log in as the operations manager, pre-run the internal answer, and log out.
+- Log in as Northstar, keep the saved cancellation answer, then prepare the escalation immediately before recording and leave its confirmation card pending.
+- Start recording on the saved Northstar cancellation answer. Use one browser window and switch roles only once during the video.
 - Close Neon, Render environment, and OpenRouter tabs so no secrets can appear.
 - Record at 100% browser zoom and share only the browser window.
 
@@ -32,19 +32,9 @@ Show the saved Northstar answer for:
 
 Expand the tool summary and point to the source chips.
 
-## 2:05–3:05 — Internal multi-source investigation
+## 2:05–3:00 — Confirmation before an action
 
-Switch to the operations-manager session and show the saved answer for:
-
-`A pickup is three hours late because of carrier fault. Should ORD-2002 get a service credit?`
-
-> The user says three hours, but the structured order record shows 4.5 hours. The agent identifies the LumenWorks account, checks its agreement and the current SOP, and applies the contract's four-hour threshold. The verified result is a fixed INR 300 credit. This demonstrates that structured records and active agreements override an assumption in the question or a general default rule.
-
-Mention that internal roles can investigate all four supplied accounts, while customers receive only their own account scope.
-
-## 3:05–4:05 — Confirmation before an action
-
-Return to the Northstar session and show the pending result for:
+Open the pending customer conversation for:
 
 `Create an escalation for ORD-1001 because the customer needs human review.`
 
@@ -54,7 +44,17 @@ Click **Confirm & create** and show the generated escalation reference.
 
 > Only this explicit click executes the mocked action. Repeated confirmation is idempotent and cannot create duplicate escalations.
 
-## 4:05–5:00 — Trust decisions, trade-offs, and next steps
+## 3:00–4:10 — Internal multi-source investigation
+
+Log out, sign in as the operations manager, and open the saved answer for:
+
+`A pickup is three hours late because of carrier fault. Should ORD-2002 get a service credit?`
+
+> The user says three hours, but the structured order record shows 4.5 hours. The agent identifies the LumenWorks account, checks its agreement and the current SOP, and applies the contract's four-hour threshold. The verified result is a fixed INR 300 credit. This demonstrates that structured records and active agreements override an assumption in the question or a general default rule.
+
+Mention that internal roles can investigate all four supplied accounts, while customers receive only their own account scope.
+
+## 4:10–5:00 — Trust decisions, trade-offs, and next steps
 
 > Trust was the additional client problem I prioritised. The source order is active customer agreement, current policy and SOP, current product guide, and only then historical ticket context. Deprecated policy is excluded by default. Missing evidence or unsupported exceptions lead to human review rather than a confident guess.
 >
