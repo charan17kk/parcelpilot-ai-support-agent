@@ -18,11 +18,12 @@ Actions use a visible confirmation card. Preparing an escalation has no operatio
 
 ## Intentionally left out
 
-- A hosted deployment: local Docker is the verified deliverable; free hosting of a persistent PostgreSQL/embedding workload is less predictable than a local interview demo.
 - Real carrier, ticketing, or shipment mutations: the assessment requests a mocked local action and supplies no external credentials.
 - Exact business-hours SLA breach timestamps: no working-hours/holiday calendar is supplied.
 - Automatic service-credit issuance: credits are advisory and can require approval or monthly-cap data not present in the pack.
 - Proactive issue dashboard: trust/reliability received the available implementation time first.
+
+The submitted application is hosted as a single Docker web service on Render with Neon PostgreSQL/pgvector. The free service may spin down when idle, so the first request after inactivity can take about a minute.
 
 ## Primary usefulness metric
 

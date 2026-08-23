@@ -1,49 +1,65 @@
-# Five-Minute Demo Script
+# Five-Minute Hosted Demo Script
 
-## 0:00–0:45 — Problem and product
+## Before recording
 
-ParcelPilot support staff currently search agreements, policies, product documentation, tickets, and operational records by hand. This demo provides customer and internal support modes while treating contracts, freshness, privacy, and uncertainty deliberately.
+- Open the hosted app and let the free Render service wake up.
+- Keep the GitHub README open in a second tab for the architecture section.
+- Prepare a customer session as Northstar and an incognito/internal session as the operations manager.
+- Pre-run the two answer examples so the video is not dependent on provider latency.
+- Prepare the escalation immediately before recording and leave its confirmation card pending.
+- Close Neon, Render environment, and OpenRouter tabs so no secrets can appear.
+- Record at 100% browser zoom and share only the browser window.
 
-Show the login screen and point out the two demo identities.
+## 0:00–0:35 — Problem and solution
 
-## 0:45–1:35 — Architecture
+Show the hosted customer interface.
 
-Show the repository or a simple architecture slide:
+> ParcelPilot's support team currently searches policies, customer contracts, product guides, tickets, and order data manually. I built ParcelPilot Assist to bring those sources into one support agent. It answers customer questions, supports internal investigations, protects each customer's data, explains which sources it trusted, and requires confirmation before creating an escalation.
 
-- React/Vite frontend.
-- FastAPI + LangGraph backend.
-- PostgreSQL/pgvector for relational records, chat/action state, full-text search, and vectors.
-- Local FastEmbed ingestion.
-- NVIDIA Nemotron 3 Ultra through OpenRouter.
+## 0:35–1:05 — Architecture
 
-Explain that account filtering and action confirmation are backend controls, not model instructions.
+Show the GitHub README or architecture note.
 
-## 1:35–2:35 — Customer example
+> The interface is React and TypeScript. FastAPI runs the backend and a single bounded LangGraph agent. PostgreSQL stores accounts, orders, tickets, conversations, and actions, while pgvector and full-text search retrieve document evidence. FastEmbed creates embeddings locally, and NVIDIA Nemotron 3 Ultra is called through OpenRouter. Security filters and calculations run in backend tools rather than relying on model instructions.
 
-Log in as Northstar and ask:
+## 1:05–2:05 — Customer answer and source conflict
+
+Show the saved Northstar answer for:
 
 `Can Northstar cancel ORD-1001 without a cancellation fee? Explain why.`
 
-Open the tool timeline and citations. Explain that the order is BOOKED and not picked up, while Northstar's active agreement waives the normal after-30-minute fee. Point out the confidence badge and account-scoped source drawer.
+> The agent looks up the real order and applies Northstar's active agreement. The normal SOP would charge INR 250 after 30 minutes, but the customer agreement explicitly waives that fee, so the higher-authority contract wins. The answer shows high confidence, an INR 0 result, the tool used, and citations to the order, agreement, and current SOP. This is advisory only; the agent does not claim that a cancellation was executed.
 
-## 2:35–3:35 — Internal multi-step example
+Expand the tool summary and point to the source chips.
 
-Log in as support and ask:
+## 2:05–3:05 — Internal multi-source investigation
 
-`A pickup is late because of carrier fault. Should ORD-2002 get a service credit?`
+Switch to the operations-manager session and show the saved answer for:
 
-Explain that the agent looks up the order, finds LumenWorks, reads its agreement and the SOP, uses the workbook snapshot time, and applies the contract's four-hour threshold and fixed INR 300 amount rather than the default formula.
+`A pickup is three hours late because of carrier fault. Should ORD-2002 get a service credit?`
 
-Then briefly ask about `TKT-502` to show that the current product guide overrides the incorrect historical resolution.
+> The user says three hours, but the structured order record shows 4.5 hours. The agent identifies the LumenWorks account, checks its agreement and the current SOP, and applies the contract's four-hour threshold. The verified result is a fixed INR 300 credit. This demonstrates that structured records and active agreements override an assumption in the question or a general default rule.
 
-## 3:35–4:20 — Confirmation and privacy
+Mention that internal roles can investigate all four supplied accounts, while customers receive only their own account scope.
 
-Ask the Northstar customer mode to create an escalation for `ORD-1001`. Show the pending confirmation card and emphasise that nothing has happened yet. Confirm it and show the generated escalation reference.
+## 3:05–4:05 — Confirmation before an action
 
-Mention the verified privacy test: a Northstar session receives a generic 404 for LumenWorks account data.
+Return to the Northstar session and show the pending result for:
 
-## 4:20–5:00 — Decisions and next steps
+`Create an escalation for ORD-1001 because the customer needs human review.`
 
-Summarise the authority order, deprecated/historical handling, deterministic calculations, and human-review fallback. State that the next priorities are an evaluation gate, proactive issue dashboard, SSO, and a real ticketing connector.
+> The agent may prepare an escalation, but preparation has no operational effect. The confirmation card shows exactly what will be created. Confirmation is handled by a separate backend endpoint that checks the owner, account scope, expiry, and current status.
 
-Use grounded first-contact resolution rate as the primary product metric, with zero cross-account leaks and zero unconfirmed actions as guardrails.
+Click **Confirm & create** and show the generated escalation reference.
+
+> Only this explicit click executes the mocked action. Repeated confirmation is idempotent and cannot create duplicate escalations.
+
+## 4:05–5:00 — Trust decisions, trade-offs, and next steps
+
+> Trust was the additional client problem I prioritised. The source order is active customer agreement, current policy and SOP, current product guide, and only then historical ticket context. Deprecated policy is excluded by default. Missing evidence or unsupported exceptions lead to human review rather than a confident guess.
+>
+> The main demo trade-off is the free OpenRouter endpoint, which can be rate-limited, and Render's free service, which can take about a minute to wake. For a production rollout I would add evaluation gates, ParcelPilot SSO, real ticketing integrations, and a proactive dashboard for recurring issues and SLA risk.
+>
+> My primary success metric would be grounded first-contact resolution rate, with zero cross-account leaks and zero unconfirmed actions as hard guardrails.
+
+End on the hosted interface and briefly show the GitHub repository URL.
