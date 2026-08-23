@@ -20,7 +20,7 @@ The application accepts Neon's standard `postgresql://` connection string. It co
    - `OPENROUTER_API_KEY`: the existing OpenRouter key.
 5. Apply the Blueprint and wait for the first deployment.
 
-The deployed URL is `https://parcelpilot-ai-support-agent-vgsf.onrender.com`. Render added the suffix when reserving the globally unique service hostname, so `FRONTEND_ORIGIN` uses that exact public origin.
+The deployed URL is `https://parcelpilot-ai-support-agent-ygsf.onrender.com`. Render added the suffix when reserving the globally unique service hostname, so `FRONTEND_ORIGIN` uses that exact public origin.
 
 ## 3. Load the assessment data into Neon
 
@@ -34,7 +34,7 @@ Use single quotes around the URL in PowerShell because hosted database URLs cont
 
 ## 4. Verify the hosted application
 
-1. Open `https://parcelpilot-ai-support-agent-vgsf.onrender.com/api/v1/ready` and confirm every readiness value is `true`.
+1. Open `https://parcelpilot-ai-support-agent-ygsf.onrender.com/api/v1/ready` and confirm every readiness value is `true`.
 2. Open the main URL and sign in with one of the demo identities from the README.
 3. Ask a deterministic order question and confirm citations appear.
 4. Prepare an escalation, confirm it, and verify the completed action card.

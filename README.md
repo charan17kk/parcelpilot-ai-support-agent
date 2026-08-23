@@ -2,7 +2,7 @@
 
 ParcelPilot Assist is a trust-aware customer-support agent for the ParcelPilot interview assessment. It supports a customer mode with strict account isolation and an authorised internal mode for support staff. Answers combine the supplied policies, customer agreements, product documentation, orders, accounts, and tickets. Any proposed escalation remains pending until the user explicitly confirms it.
 
-Hosted demo: [https://parcelpilot-ai-support-agent-vgsf.onrender.com](https://parcelpilot-ai-support-agent-vgsf.onrender.com)
+Hosted demo: [https://parcelpilot-ai-support-agent-ygsf.onrender.com](https://parcelpilot-ai-support-agent-ygsf.onrender.com)
 
 ## What is implemented
 
