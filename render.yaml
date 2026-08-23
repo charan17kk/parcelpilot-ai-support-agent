@@ -20,7 +20,7 @@ services:
       - key: SESSION_COOKIE_SECURE
         value: true
       - key: FRONTEND_ORIGIN
-        value: https://parcelpilot-ai-support-agent.onrender.com
+        value: https://parcelpilot-ai-support-agent-vgsf.onrender.com
       - key: OPENROUTER_MODEL
         value: nvidia/nemotron-3-ultra-550b-a55b:free
       - key: STATIC_FILES_DIR
