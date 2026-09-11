@@ -79,7 +79,7 @@ All six PDFs have valid `%PDF-` file headers. The Excel workbook opens as a vali
 | Database | PostgreSQL with PGVector |
 | Local infrastructure | Docker Compose |
 | LLM gateway | OpenRouter |
-| LLM | `nvidia/nemotron-3.5-lightning:free` |
+| LLM | `nex-agi/nex-n2.5-mini:free` |
 | Embeddings | Local `sentence-transformers/all-MiniLM-L6-v2` |
 | Agent framework | LangChain integrations plus LangGraph orchestration |
 | PDF parsing | PyMuPDF, subject to license review; `pypdf` fallback |
@@ -1040,7 +1040,7 @@ The OpenRouter key belongs only in `backend/.env`. It must never use a `VITE_` n
 
 - Provider: OpenRouter.
 - Base URL: `https://openrouter.ai/api/v1`.
-- Model: `nvidia/nemotron-3.5-lightning:free`.
+- Model: `nex-agi/nex-n2.5-mini:free`.
 - Authentication: backend-only OpenRouter API key.
 - Automatic fallback: none.
 - Timeout: configurable.
@@ -1243,7 +1243,7 @@ No frontend secret variables.
 - `LLM_PROVIDER=openrouter`
 - `OPENROUTER_API_KEY`
 - `OPENROUTER_BASE_URL=https://openrouter.ai/api/v1`
-- `OPENROUTER_MODEL=nvidia/nemotron-3.5-lightning:free`
+- `OPENROUTER_MODEL=nex-agi/nex-n2.5-mini:free`
 - `LLM_TIMEOUT_SECONDS`
 - `LLM_MAX_RETRIES`
 - `AGENT_MAX_LLM_CALLS`
@@ -1632,7 +1632,7 @@ State which coding assistants were used, what they helped generate/review, and t
 7. Preserve the exact source provenance and workbook snapshot time.
 8. Create `frontend/` and `backend/` using only the selected technologies.
 9. Use Docker Compose for frontend, backend, and PostgreSQL/PGVector.
-10. Use OpenRouter with only `nvidia/nemotron-3.5-lightning:free` initially.
+10. Use OpenRouter with only `nex-agi/nex-n2.5-mini:free` initially.
 11. Keep the model configurable through `OPENROUTER_MODEL`; do not add automatic fallback unless the user later requests it.
 12. Never expose `OPENROUTER_API_KEY` to the frontend or logs.
 13. Implement P0 requirements in the phase order above.
