@@ -27,7 +27,7 @@ No LangSmith project, key, tracing, or paid observability service is used. LangS
 
 - Docker Desktop with Linux containers and Docker Compose.
 - The seven assessment files in `data/raw/` with their original filenames.
-- An OpenRouter API key authorised to call `nvidia/nemotron-3-ultra-550b-a55b:free`.
+- An OpenRouter API key authorised to call `nvidia/nemotron-3.5-lightning:free`.
 
 No local Node.js, Python, PostgreSQL, or embedding model installation is required when using Docker.
 
