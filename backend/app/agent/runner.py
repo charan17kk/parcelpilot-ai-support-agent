@@ -1,4 +1,5 @@
 import json
+import re
 import time
 import uuid
 from dataclasses import dataclass, field
@@ -65,6 +66,29 @@ class AgentRunner:
         self.tool_events: list[dict[str, Any]] = []
         self.tool_results: list[dict[str, Any]] = []
         self.pending_action: PendingAction | None = None
+
+    @staticmethod
+    def preferred_tool_call(user_message: str) -> tuple[str, dict[str, str]] | None:
+        """Route obvious ID-based requests without spending an LLM call on intent detection."""
+
+        text = user_message.lower()
+        order_match = re.search(r"\bord-\d+\b", user_message, flags=re.IGNORECASE)
+        ticket_match = re.search(r"\btkt-\d+\b", user_message, flags=re.IGNORECASE)
+        if ticket_match:
+            return "lookup_ticket", {"ticket_id": ticket_match.group(0).upper()}
+        if not order_match:
+            return None
+
+        order_id = order_match.group(0).upper()
+        if "cancel" in text or "cancellation" in text:
+            return "calculate_cancellation_outcome", {"order_id": order_id}
+        if "service credit" in text or (
+            "credit" in text and any(word in text for word in ("pickup", "late", "delay"))
+        ):
+            return "calculate_service_credit_outcome", {"order_id": order_id}
+        if any(word in text for word in ("where", "status", "track", "order", "shipment")):
+            return "lookup_order", {"order_id": order_id}
+        return None
 
     async def _record_tool(
         self,
@@ -453,8 +477,10 @@ Rules:
             model=self.settings.openrouter_model,
             timeout=self.settings.llm_timeout_seconds,
             max_retries=self.settings.llm_max_retries,
+            max_tokens=self.settings.llm_max_output_tokens,
             temperature=0.1,
             default_headers={"X-OpenRouter-Title": "ParcelPilot Support Assessment"},
+            extra_body={"models": self.settings.openrouter_fallback_model_ids},
         ).bind_tools(tools)
 
         async def call_model(state: AgentState) -> dict[str, Any]:
@@ -500,18 +526,40 @@ Rules:
         graph.add_edge("tools", "model")
         app = graph.compile()
 
+        initial_messages: list[BaseMessage] = [
+            SystemMessage(content=self.system_prompt(account.name if account else None, snapshot.snapshot_at)),
+            HumanMessage(content=user_message),
+        ]
+        initial_tool_steps = 0
+        preferred_call = self.preferred_tool_call(user_message)
+        if preferred_call:
+            tool_name, tool_args = preferred_call
+            prepared_call = AIMessage(
+                content="",
+                tool_calls=[
+                    {
+                        "name": tool_name,
+                        "args": tool_args,
+                        "id": f"prefetch-{uuid.uuid4()}",
+                        "type": "tool_call",
+                    }
+                ],
+            )
+            prepared_result = await tool_node.ainvoke({"messages": [prepared_call]})
+            initial_messages.extend([prepared_call, *prepared_result["messages"]])
+            initial_tool_steps = 1
+
         result = await app.ainvoke(
             {
-                "messages": [
-                    SystemMessage(content=self.system_prompt(account.name if account else None, snapshot.snapshot_at)),
-                    HumanMessage(content=user_message),
-                ],
+                "messages": initial_messages,
                 "llm_calls": 0,
-                "tool_steps": 0,
+                "tool_steps": initial_tool_steps,
             }
         )
         final_message = result["messages"][-1]
         content = final_message.content if isinstance(final_message.content, str) else str(final_message.content)
+        if not content.strip():
+            content = ReliabilityService.fallback_answer(self.tool_results, self.citations)
         content = ReliabilityService.guard_action_claims(
             content,
             {event["tool_name"] for event in self.tool_events if event["status"] == "completed"},

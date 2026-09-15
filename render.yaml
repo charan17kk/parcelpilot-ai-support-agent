@@ -22,7 +22,15 @@ services:
       - key: FRONTEND_ORIGIN
         value: https://parcelpilot-ai-support-agent-ygsf.onrender.com
       - key: OPENROUTER_MODEL
-        value: nex-agi/nex-n2.5-mini:free
+        value: liquid/lfm-2.5-2.6b:free
+      - key: OPENROUTER_FALLBACK_MODELS
+        value: inclusionai/ling-3.0-flash-vl:free,openrouter/free
+      - key: LLM_TIMEOUT_SECONDS
+        value: 25
+      - key: LLM_MAX_RETRIES
+        value: 0
+      - key: LLM_MAX_OUTPUT_TOKENS
+        value: 600
       - key: STATIC_FILES_DIR
         value: /app/frontend
       - key: AGENT_MAX_LLM_CALLS

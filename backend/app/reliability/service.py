@@ -70,6 +70,64 @@ class ReliabilityService:
         return guarded
 
     @staticmethod
+    def fallback_answer(
+        tool_results: list[dict[str, Any]], citations: list[dict[str, Any]]
+    ) -> str:
+        """Render a grounded response if a provider returns an empty final message."""
+
+        if not tool_results:
+            return (
+                "I could not produce a grounded answer from the available data. "
+                "Please retry or ask ParcelPilot support to review the request."
+            )
+        result = tool_results[-1]
+        if result.get("not_found"):
+            return "I could not find that record within your authorized account data."
+
+        lines: list[str] = []
+        order_id = result.get("order_id")
+        ticket_id = result.get("ticket_id")
+        if order_id:
+            lines.append(f"**Verified outcome for {order_id}**")
+        elif ticket_id:
+            lines.append(f"**Verified ticket details for {ticket_id}**")
+
+        if result.get("outcome"):
+            lines.append(str(result["outcome"]))
+        if "can_cancel" in result:
+            allowed = result.get("can_cancel")
+            lines.append(
+                f"- **Cancellation allowed:** "
+                f"{'Yes' if allowed is True else 'No' if allowed is False else 'Needs human review'}"
+            )
+            fee = result.get("fee_inr")
+            lines.append(f"- **Cancellation fee:** {'Not applicable' if fee is None else f'INR {fee}'}")
+        if "eligible" in result:
+            eligible = result.get("eligible")
+            lines.append(
+                f"- **Service-credit eligible:** "
+                f"{'Yes' if eligible is True else 'No' if eligible is False else 'Needs human review'}"
+            )
+            credit = result.get("credit_inr")
+            lines.append(f"- **Credit amount:** {'Not determined' if credit is None else f'INR {credit}'}")
+        if result.get("rule"):
+            lines.append(f"- **Applicable rule:** {result['rule']}")
+        if result.get("status"):
+            lines.append(f"- **Status:** {result['status']}")
+        if result.get("severity"):
+            lines.append(f"- **Severity:** {result['severity']}")
+        sla = result.get("sla")
+        if isinstance(sla, dict) and sla.get("outcome"):
+            lines.append(f"- **SLA:** {sla['outcome']}")
+        if result.get("human_review_required"):
+            lines.append("- **Human review:** Required because the supplied facts are incomplete or uncertain.")
+
+        labels = [str(item.get("label")) for item in citations if item.get("label")]
+        if labels:
+            lines.append("\n**Sources:** " + ", ".join(labels))
+        return "\n".join(lines).strip()
+
+    @staticmethod
     def source_instruction() -> str:
         return (
             "Apply source precedence contextually: an active customer agreement controls applicable "

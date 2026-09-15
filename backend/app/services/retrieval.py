@@ -9,7 +9,7 @@ from app.config import Settings
 from app.db.models import Document, DocumentChunk
 from app.db.repositories import SupportRepository
 from app.reliability import ReliabilityService
-from app.services.embeddings import LocalEmbeddingService
+from app.services.embeddings import LocalEmbeddingService, get_local_embedding_service
 
 
 class RetrievalService:
@@ -22,7 +22,7 @@ class RetrievalService:
 
     def embedding_model(self) -> LocalEmbeddingService:
         if self._embedding_model is None:
-            self._embedding_model = LocalEmbeddingService(self.settings.embedding_model)
+            self._embedding_model = get_local_embedding_service(self.settings.embedding_model)
         return self._embedding_model
 
     async def search_documents(

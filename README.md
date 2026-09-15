@@ -8,7 +8,7 @@ Hosted demo: [https://parcelpilot-ai-support-agent-ygsf.onrender.com](https://pa
 
 - Customer and internal chat contexts with mocked role-based login.
 - Backend-enforced account and document access control.
-- A LangGraph tool-calling workflow using NVIDIA Nemotron 3 Ultra through OpenRouter.
+- A bounded LangGraph tool-calling workflow using fast free models through OpenRouter, with automatic model fallback.
 - Six agent tools: document search, order lookup, ticket lookup, cancellation calculation, service-credit calculation, and escalation preparation.
 - Hybrid RAG using local FastEmbed embeddings, PostgreSQL full-text search, and pgvector.
 - Explicit source precedence: customer agreement → current policy/SOP → current product guide → historical context.
@@ -27,7 +27,7 @@ No LangSmith project, key, tracing, or paid observability service is used. LangS
 
 - Docker Desktop with Linux containers and Docker Compose.
 - The seven assessment files in `data/raw/` with their original filenames.
-- An OpenRouter API key authorised to call `nex-agi/nex-n2.5-mini:free`.
+- An OpenRouter API key authorised to call free models. The default route uses `liquid/lfm-2.5-2.6b:free`, then falls back to `inclusionai/ling-3.0-flash-vl:free` and `openrouter/free`.
 
 No local Node.js, Python, PostgreSQL, or embedding model installation is required when using Docker.
 

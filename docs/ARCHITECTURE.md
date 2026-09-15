@@ -12,7 +12,7 @@ The backend is the sole security boundary. The browser never connects directly t
 
 ## Agent design
 
-A single LangGraph state graph alternates between NVIDIA Nemotron 3 Ultra and authorised tools. The graph caps LLM calls and tool steps, handles tool failures, and returns a concise final answer. There is no multi-agent design because one bounded support workflow is easier to audit and demonstrate.
+A single LangGraph state graph alternates between an OpenRouter-hosted model and authorised tools. Obvious ID-based cancellation, service-credit, order-status, and ticket requests are routed directly to the correct safe tool before the model formats the evidence. The primary free model has two automatic fallbacks, and the graph caps LLM calls and tool steps. There is no multi-agent design because one bounded support workflow is easier to audit and demonstrate.
 
 The model is used for intent interpretation, choosing tools, and explaining verified evidence. It is not trusted to calculate fees, decide data scope, or execute actions. Cancellation, service-credit, severity, and SLA logic are deterministic Python functions.
 
@@ -60,6 +60,6 @@ Internal roles may access all records in the supplied snapshot. A production ver
 
 - PostgreSQL + pgvector avoids a separate vector service and supports transactional actions and reporting.
 - Local FastEmbed keeps document ingestion free and avoids sending the source pack to an embeddings API.
-- The OpenRouter free model keeps the demo cost-free but introduces rate limits, availability risk, and provider logging. The application exposes this through readiness and safe 429/503 states.
+- OpenRouter's free endpoints keep the demo cost-free but introduce rate limits, availability risk, and provider logging. A fast primary model, two fallbacks, deterministic tool routing, and an empty-response fallback reduce that risk, while safe 429/503 states remain explicit.
 - Synchronous chat responses keep the assessment implementation compact. Streaming tool progress is a logical follow-up.
 - Business-hours SLA dates are not guessed because the pack does not supply a holiday/calendar definition.

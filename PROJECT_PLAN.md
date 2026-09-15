@@ -25,7 +25,7 @@ The chatbot will not behave as an unrestricted autonomous AI. It will use a cons
 - Deterministic calculations.
 - Confirmation-gated escalation creation.
 
-The selected LLM is **NVIDIA Nemotron 3 Ultra through OpenRouter's hosted API**. Only this model will be configured initially; there will be no automatic model fallback. The model remains configurable through a backend environment variable so it can be changed manually without source changes.
+The selected primary LLM is **Liquid LFM2.5 through OpenRouter's hosted API**, with inclusionAI Ling and OpenRouter's free model router as fallbacks. The model chain remains configurable through backend environment variables so it can be changed without source changes.
 
 The guaranteed development environment is local Docker Desktop using PostgreSQL with PGVector. A hosted deployment is P1 because the assessment prefers a hosted link, but the implementation must remain fully usable locally without paid infrastructure.
 
@@ -79,7 +79,7 @@ All six PDFs have valid `%PDF-` file headers. The Excel workbook opens as a vali
 | Database | PostgreSQL with PGVector |
 | Local infrastructure | Docker Compose |
 | LLM gateway | OpenRouter |
-| LLM | `nex-agi/nex-n2.5-mini:free` |
+| LLM | `liquid/lfm-2.5-2.6b:free` with free fallbacks |
 | Embeddings | Local `sentence-transformers/all-MiniLM-L6-v2` |
 | Agent framework | LangChain integrations plus LangGraph orchestration |
 | PDF parsing | PyMuPDF, subject to license review; `pypdf` fallback |
@@ -97,8 +97,8 @@ All six PDFs have valid `%PDF-` file headers. The Excel workbook opens as a vali
 - The free endpoint is appropriate for an interview prototype, not guaranteed production service.
 - Free-model requests are rate-limited. The application must minimize LLM calls and handle HTTP 429 cleanly.
 - Target no more than three LLM calls for one user request.
-- Nemotron 3 Ultra supports tool calling but does not guarantee strict JSON through `response_format`; all model/tool output must be validated server-side.
-- The free endpoint warns against confidential or personal data and may log usage under NVIDIA's trial terms.
+- Free OpenRouter models support tool calling but do not guarantee strict JSON through `response_format`; all model/tool output must be validated server-side.
+- Free endpoints may log usage and are not appropriate for confidential production data.
 - Use only the supplied assessment dataset and do not enter real customer data.
 - Retrieve locally and send only the small number of relevant excerpts and structured facts needed for an answer; never send the complete data pack to the model.
 
@@ -391,7 +391,7 @@ Customer account scope is injected from authenticated server context. A model-su
 ### AI
 
 - OpenRouter exposes an OpenAI-compatible API and requires only one backend key.
-- Nemotron 3 Ultra is selected for complex planning, source comparison, and explanation quality.
+- Liquid LFM2.5 is selected for low-latency tool use, with Ling and OpenRouter's free router providing availability fallbacks.
 - Model choice alone is not the trust mechanism. Authorization, retrieval, calculations, precedence, citations, and confirmation are deterministic backend responsibilities.
 - Local embeddings keep bulk document processing out of the hosted LLM.
 
@@ -422,7 +422,7 @@ FastAPI application
         |                    |
         v                    v
 PostgreSQL + PGVector   OpenRouter API
-local Docker            Nemotron 3 Ultra
+local Docker            OpenRouter free model chain
 
 Offline ingestion:
 PDFs -> page text -> chunks -> local embeddings -> PGVector
@@ -1040,7 +1040,7 @@ The OpenRouter key belongs only in `backend/.env`. It must never use a `VITE_` n
 
 - Provider: OpenRouter.
 - Base URL: `https://openrouter.ai/api/v1`.
-- Model: `nex-agi/nex-n2.5-mini:free`.
+- Primary model: `liquid/lfm-2.5-2.6b:free`; fallbacks: `inclusionai/ling-3.0-flash-vl:free`, then `openrouter/free`.
 - Authentication: backend-only OpenRouter API key.
 - Automatic fallback: none.
 - Timeout: configurable.
@@ -1243,9 +1243,11 @@ No frontend secret variables.
 - `LLM_PROVIDER=openrouter`
 - `OPENROUTER_API_KEY`
 - `OPENROUTER_BASE_URL=https://openrouter.ai/api/v1`
-- `OPENROUTER_MODEL=nex-agi/nex-n2.5-mini:free`
+- `OPENROUTER_MODEL=liquid/lfm-2.5-2.6b:free`
+- `OPENROUTER_FALLBACK_MODELS=inclusionai/ling-3.0-flash-vl:free,openrouter/free`
 - `LLM_TIMEOUT_SECONDS`
 - `LLM_MAX_RETRIES`
+- `LLM_MAX_OUTPUT_TOKENS`
 - `AGENT_MAX_LLM_CALLS`
 - `AGENT_MAX_TOOL_STEPS`
 - `EMBEDDING_MODEL=sentence-transformers/all-MiniLM-L6-v2`
@@ -1444,7 +1446,7 @@ Exact versions should be pinned during implementation after compatibility verifi
 
 ### Phase 6 — Agent and tools
 
-- [ ] Configure OpenRouter/Nemotron 3 Ultra only.
+- [ ] Configure the OpenRouter primary model and free fallback chain.
 - [ ] Implement typed tools.
 - [ ] Implement bounded LangGraph workflow.
 - [ ] Enforce maximum three LLM calls by default.
@@ -1524,7 +1526,7 @@ The P0 application is complete only when all of the following are true:
 
 | Requirement | Frontend | Backend | Database | AI/integration | Priority |
 |---|---|---|---|---|---|
-| Natural-language chatbot | Chat pages | Message service | Chats/messages | Nemotron/LangGraph | P0 |
+| Natural-language chatbot | Chat pages | Message service | Chats/messages | OpenRouter/LangGraph | P0 |
 | Supplied-data-only answers | Limitation UI | Tool allowlist | Supplied records | Prompt/RAG | P0 |
 | Document retrieval | Citations/tool trace | Retrieval service | Documents/chunks | Embeddings/PGVector | P0 |
 | Structured lookup/calculation | Result explanation | Repositories/calculations | Accounts/orders/tickets | Typed tools | P0 |
@@ -1576,7 +1578,7 @@ The P0 application is complete only when all of the following are true:
 | OpenPyXL | Free/open-source |
 | PDF parser | Free/open-source; review PyMuPDF AGPL compatibility and use pypdf if needed |
 | Docker-based local environment | No service charge; review Docker Desktop license for organizational production use |
-| OpenRouter Nemotron 3 Ultra free endpoint | Free, rate-limited prototype endpoint; not guaranteed production pricing/availability |
+| OpenRouter free endpoints | Free, rate-limited prototype endpoints; not guaranteed production pricing/availability |
 | Hosted PostgreSQL/frontend/backend | Optional free tier only after current terms are verified |
 | Paid dependencies | None required |
 
@@ -1632,8 +1634,8 @@ State which coding assistants were used, what they helped generate/review, and t
 7. Preserve the exact source provenance and workbook snapshot time.
 8. Create `frontend/` and `backend/` using only the selected technologies.
 9. Use Docker Compose for frontend, backend, and PostgreSQL/PGVector.
-10. Use OpenRouter with only `nex-agi/nex-n2.5-mini:free` initially.
-11. Keep the model configurable through `OPENROUTER_MODEL`; do not add automatic fallback unless the user later requests it.
+10. Use `liquid/lfm-2.5-2.6b:free` through OpenRouter, with the configured free fallback chain.
+11. Keep the model chain configurable through `OPENROUTER_MODEL` and `OPENROUTER_FALLBACK_MODELS`.
 12. Never expose `OPENROUTER_API_KEY` to the frontend or logs.
 13. Implement P0 requirements in the phase order above.
 14. Do not implement P1 until all P0 privacy, trust, ingestion, citation, and confirmation checks pass.

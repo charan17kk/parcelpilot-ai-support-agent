@@ -1,3 +1,4 @@
+import asyncio
 import logging
 import time
 import uuid
@@ -14,11 +15,25 @@ from fastapi.staticfiles import StaticFiles
 from app.api.routes import actions, auth, chats, sources, system
 from app.config import get_settings
 from app.observability import configure_logging
+from app.services.embeddings import get_local_embedding_service
 
 
 settings = get_settings()
 configure_logging(settings)
 logger = logging.getLogger("parcelpilot")
+
+
+async def warm_embedding_model() -> None:
+    """Move local embedding startup cost out of the first chat request."""
+
+    try:
+        service = get_local_embedding_service(settings.embedding_model)
+        await asyncio.to_thread(service.embed_one, "ParcelPilot retrieval warmup")
+        logger.info("embedding.ready")
+    except Exception:
+        # Readiness should still expose the API when semantic search cannot warm;
+        # a later retrieval request will retry and surface its normal safe error.
+        logger.exception("embedding.warmup_failed")
 
 app = FastAPI(
     title="ParcelPilot Support API",
@@ -26,6 +41,11 @@ app = FastAPI(
     docs_url="/api/docs" if settings.app_env != "production" else None,
     redoc_url=None,
 )
+
+
+@app.on_event("startup")
+async def startup_warmup() -> None:
+    await warm_embedding_model()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.allowed_origins,

@@ -20,7 +20,7 @@ Show the hosted customer interface.
 
 Show the GitHub README or architecture note.
 
-> The interface is React and TypeScript. FastAPI runs the backend and a single bounded LangGraph agent. PostgreSQL stores accounts, orders, tickets, conversations, and actions, while pgvector and full-text search retrieve document evidence. FastEmbed creates embeddings locally, and NVIDIA Nemotron 3 Ultra is called through OpenRouter. Security filters and calculations run in backend tools rather than relying on model instructions.
+> The interface is React and TypeScript. FastAPI runs the backend and a single bounded LangGraph agent. PostgreSQL stores accounts, orders, tickets, conversations, and actions, while pgvector and full-text search retrieve document evidence. FastEmbed creates embeddings locally, and fast free models are called through OpenRouter with automatic fallback. Security filters, deterministic routing, and calculations run in backend tools rather than relying on model instructions.
 
 ## 1:05–2:05 — Customer answer and source conflict
 

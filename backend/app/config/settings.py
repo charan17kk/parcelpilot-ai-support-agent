@@ -31,9 +31,11 @@ class Settings(BaseSettings):
     llm_provider: Literal["openrouter"] = "openrouter"
     openrouter_api_key: str = ""
     openrouter_base_url: str = "https://openrouter.ai/api/v1"
-    openrouter_model: str = "nex-agi/nex-n2.5-mini:free"
-    llm_timeout_seconds: int = 60
-    llm_max_retries: int = 1
+    openrouter_model: str = "liquid/lfm-2.5-2.6b:free"
+    openrouter_fallback_models: str = "inclusionai/ling-3.0-flash-vl:free,openrouter/free"
+    llm_timeout_seconds: int = 25
+    llm_max_retries: int = 0
+    llm_max_output_tokens: int = 600
     agent_max_llm_calls: int = 6
     agent_max_tool_steps: int = 6
 
@@ -93,6 +95,14 @@ class Settings(BaseSettings):
     @property
     def openrouter_ready(self) -> bool:
         return bool(self.openrouter_api_key.strip())
+
+    @property
+    def openrouter_fallback_model_ids(self) -> list[str]:
+        return [
+            model.strip()
+            for model in self.openrouter_fallback_models.split(",")
+            if model.strip() and model.strip() != self.openrouter_model
+        ]
 
 
 @lru_cache
